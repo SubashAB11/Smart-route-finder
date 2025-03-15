@@ -1,37 +1,36 @@
 package com.abs.RoutePlanner.controller;
 
+import com.abs.RoutePlanner.model.DistanceResponse;
+import com.abs.RoutePlanner.model.Edge;
 import com.abs.RoutePlanner.model.Graph;
 import com.abs.RoutePlanner.service.RouteService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/routes")
 @CrossOrigin(origins = "*")
+@AllArgsConstructor
 public class RouteController {
 
     private final RouteService routeService;
-    private final Graph graph;
 
-    public RouteController(RouteService routeService) {
-        this.routeService = routeService;
-        this.graph = new Graph();
-        loadSampleData();
-    }
+    @PostMapping("/shortest")
+    public ResponseEntity<List<String>> getShortestPath(@RequestBody List<DistanceResponse> response, @RequestParam String src, @RequestParam String dest) {
+        System.out.println(response);
 
-    private void loadSampleData() {
-        graph.addEdge("A", "B", 4);
-        graph.addEdge("A", "C", 2);
-        graph.addEdge("B", "C", 5);
-        graph.addEdge("B", "D", 10);
-        graph.addEdge("C", "D", 3);
-        graph.addEdge("D", "E", 8);
-    }
+        if (response == null || response.isEmpty()) {
+            return ResponseEntity.badRequest().body(List.of("thers no nodes"));
+        }
 
-    @GetMapping("/shortest")
-    public ResponseEntity<List<String>> getShortestPath(@RequestParam String src, @RequestParam String dest) {
+        Graph graph = new Graph();
+        response.forEach(response1 -> graph.addEdge(response1.getSource(),response1.getTarget(),response1.getWeight()));
         List<String> path = routeService.findShortestPath(graph, src, dest);
 
         if (path.isEmpty()) {
@@ -40,14 +39,5 @@ public class RouteController {
         return ResponseEntity.ok(path);
     }
 
-    @GetMapping("/nodes")
-    public ResponseEntity<List<String>> getNodes() {
-        List<String> nodes = graph.getNodes().stream().toList();
-
-        if (nodes.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(nodes);
-    }
 
 }
