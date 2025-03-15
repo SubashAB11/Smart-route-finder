@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>{{ data.action === 'add' ? 'Add Node' : data.action === 'distance' ? 'Find Shortest Distance' : 'Remove Node' }}</h2>
+<mat-dialog-content>
+    @if (data.action === 'add') {
+    <div>
+        <mat-form-field>
+            <mat-label>Node ID</mat-label>
+            <input matInput [(ngModel)]="newNode.id">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Node Label</mat-label>
+            <input matInput [(ngModel)]="newNode.label">
+        </mat-form-field>
+
+        <h3>Links</h3>
+        @for (link of links;let i = $index; track link.target;) {
+        <div>
+            <mat-form-field>
+                <mat-label>Target Node</mat-label>
+                <mat-select [(ngModel)]="link.target">
+                    @for ( node of data.nodes; track node.id) {
+                    <mat-option [value]="node.id">
+                        {{ node.label }}
+                    </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Weight</mat-label>
+                <input matInput type="number" [(ngModel)]="link.weight">
+            </mat-form-field>
+
+            <button mat-button (click)="removeLink(i)">
+                cancel
+            </button>
+        </div>
+        }
+
+        <button mat-button color="primary" (click)="addLink()">➕ Add Link</button>
+    </div>
+    }
+
+    @if (data.action === 'remove') {
+    <div>
+        <mat-form-field>
+            <mat-label>Select Node to Remove</mat-label>
+            <mat-select [(ngModel)]="selectedNodeId">
+                @for(node of data.nodes; track node.id) {
+                <mat-option [value]="node.id">
+                    {{ node.label }}
+                </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+    }
+
+    @if (data.action === 'distance') {
+    <div>
+        <mat-form-field>
+            <mat-label>Select Source Node</mat-label>
+            <mat-select [(ngModel)]="sourceNode" required>
+                @for(node of data.nodes; track node.id) {
+                <mat-option [value]="node.id">
+                    {{ node.label }}
+                </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Select Destination Node</mat-label>
+            <mat-select [(ngModel)]="destNode" required>
+                @for(node of data.nodes; track node.id) {
+                <mat-option [value]="node.id">
+                    {{ node.label }}
+                </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        @if (sourceNode && destNode && sourceNode === destNode) {
+        <mat-error>Source Node and Destination Node Cannot be same</mat-error>
+        }
+    </div>
+    }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="closeDialog()">Cancel</button>
+    <button mat-button color="primary" (click)="confirmAction()">{{ data.action === 'add' ? 'Add' : data.action
+        ==='distance' ? 'Find' : 'Remove' }}</button>
+</mat-dialog-actions>

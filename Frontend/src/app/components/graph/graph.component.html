@@ -1,0 +1,35 @@
+<div class="container">
+    <mat-toolbar>
+        <button mat-raised-button color="primary" (click)="openDialog('add')">Add Node</button>
+        <button mat-raised-button color="warn" (click)="openDialog('remove')">Remove Node</button>
+        <button mat-raised-button color="warn" (click)="openDialog('distance')">Find Distance</button>
+    </mat-toolbar>
+
+    <ngx-graph layout="dagre" [links]="links" [nodes]="nodes" [autoCenter]="true" [autoZoom]="true" [enableZoom]="false"
+        [panningEnabled]="false" [draggingEnabled]="false">
+
+        <ng-template #nodeTemplate let-node>
+            <svg:g class="node">
+                <svg:rect width="60" height="30" rx="5" ry="5" fill="lightblue"></svg:rect>
+                <svg:text x="30" y="15" text-anchor="middle" alignment-baseline="middle" class="node-label">
+                    {{ node.label }}
+                </svg:text>
+            </svg:g>
+        </ng-template>
+
+
+        <ng-template #linkTemplate let-link>
+            <svg:g class="edge">
+                <svg:path [attr.stroke]="link.color" class="line" stroke-width="3"></svg:path>
+                <svg:text class="edge-label" text-anchor="middle">
+                    <textPath class="text-path" [attr.href]="'#' + link.id"
+                        [style.dominant-baseline]="link.dominantBaseline" startOffset="50%">
+                        {{link.weight}}
+                    </textPath>
+                </svg:text>
+            </svg:g>
+        </ng-template>
+
+    </ngx-graph>
+
+</div>
